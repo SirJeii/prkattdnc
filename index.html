@@ -646,7 +646,7 @@
             currentMemberData: null,
             assignedPurok: null,
             events: [], accounts: [], personnel: [], attendance: [], config: [],
-            scannerObj: null, activeEventId: null
+            scannerObj: null, activeEventId: null, isProcessingScan: false
         };
 
         // Utility: Toast
@@ -1668,8 +1668,21 @@
             } catch (e) {}
         }
 
-        function safePauseScanner() { if(window.appState.scannerObj && window.appState.scannerObj.getState() === 2) window.appState.scannerObj.pause(true); }
-        function safeResumeScanner() { if(window.appState.scannerObj && window.appState.scannerObj.getState() === 3) window.appState.scannerObj.resume(); }
+        function safePauseScanner() {
+            try {
+                if(window.appState.scannerObj && typeof window.appState.scannerObj.pause === 'function') {
+                    window.appState.scannerObj.pause(true);
+                }
+            } catch(e) { console.warn('Scanner pause skipped', e); }
+        }
+
+        function safeResumeScanner() {
+            try {
+                if(window.appState.scannerObj && typeof window.appState.scannerObj.resume === 'function') {
+                    window.appState.scannerObj.resume();
+                }
+            } catch(e) { console.warn('Scanner resume skipped', e); }
+        }
 
         window.onKatiwalaEventChange = function() {
             const evId = document.getElementById('katiwalaEventSelect').value;
@@ -1704,8 +1717,11 @@
         }
 
         async function onScanSuccess(decodedText) {
-            if(!window.appState.activeEventId) return;
+            if(!window.appState.activeEventId || window.appState.isProcessingScan) return;
             
+            // Set lock
+            window.appState.isProcessingScan = true;
+
             const parts = decodedText.split('|');
             const purok = parts[0] ? parts[0].trim() : 'Unknown';
             const grupo = parts[1] ? parts[1].trim() : 'Unknown';
@@ -1718,19 +1734,17 @@
             );
 
             if (!personInMasterList) {
-                safePauseScanner();
                 window.showToast(`Si ${name} ay hindi nakarehistro sa Master List!`, "error");
-                setTimeout(() => safeResumeScanner(), 2500);
+                setTimeout(() => { window.appState.isProcessingScan = false; }, 2500);
                 return;
             }
 
             // Validation 2: Tugma ang Purok
             if (window.appState.currentUserRole === 'katiwala') {
-                const assignedPurok = window.appState.assignedPurok.toLowerCase().trim();
-                if (assignedPurok !== purok.toLowerCase()) {
-                    safePauseScanner();
+                const assignedPurok = window.appState.assignedPurok?.toLowerCase().trim();
+                if (assignedPurok && assignedPurok !== purok.toLowerCase()) {
                     window.showToast(`Bawal: Si ${name} ay mula sa ${purok} (Ikaw ay para sa ${window.appState.assignedPurok}).`, "error");
-                    setTimeout(() => safeResumeScanner(), 3000);
+                    setTimeout(() => { window.appState.isProcessingScan = false; }, 3000);
                     return;
                 }
             }
@@ -1738,18 +1752,17 @@
             // Validation 3: Duplicate Scan
             const isDuplicate = window.appState.attendance.some(a => 
                 a.eventId === window.appState.activeEventId && 
-                a.personnelName.toLowerCase() === name.toLowerCase() &&
-                a.purok.toLowerCase() === purok.toLowerCase() 
+                a.personnelName?.toLowerCase() === name.toLowerCase() &&
+                a.purok?.toLowerCase() === purok.toLowerCase() 
             );
 
             if (isDuplicate) {
-                safePauseScanner();
                 window.showToast(`${name} ay nakatala na!`, "error");
-                setTimeout(() => safeResumeScanner(), 2000);
+                setTimeout(() => { window.appState.isProcessingScan = false; }, 2000);
                 return;
             }
 
-            safePauseScanner();
+            // Beep immediately after validation passes
             playBeep();
             
             const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1771,9 +1784,12 @@
                 document.getElementById('lastScannedName').textContent = name;
                 document.getElementById('lastScannedTime').textContent = timeStr;
                 window.showToast("Matagumpay na naitala!");
-            } catch(e) { window.showToast("Network Error", "error"); }
+            } catch(e) { 
+                window.showToast("Network Error", "error"); 
+            }
             
-            setTimeout(() => safeResumeScanner(), 1500);
+            // Release lock
+            setTimeout(() => { window.appState.isProcessingScan = false; }, 1500);
         }
 
         function initScanner() {
