@@ -31,7 +31,7 @@
         #reader select { padding: 0.6rem 1rem !important; border-radius: 0.75rem !important; border: 1px solid #cbd5e1 !important; width: 100% !important; max-width: 300px !important; margin-bottom: 1rem !important; color: #1e293b !important; background-color: white !important; }
         #reader a { display: none !important; }
         
-        /* Scrollbar Hide for Tabs */
+        /* Scrollbar Hide for Tabs & Containers */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -191,24 +191,13 @@
 
             <!-- 2. KATIWALA ACCOUNTS TAB -->
             <div id="admin-accounts" class="hidden flex-col lg:flex-row gap-6">
-                <div class="w-full lg:w-1/3">
+                <div class="w-full lg:w-1/3 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                         <h2 class="text-lg font-bold mb-5 text-slate-800 flex items-center gap-2">
                             <span class="bg-emerald-100 p-2 rounded-lg text-emerald-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg></span>
                             Account ng Katiwala
                         </h2>
                         <div class="flex flex-col gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Purok / Assigned Area</label>
-                                <select id="accPurokInput" onchange="window.autoGenCredentials()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all cursor-pointer">
-                                    <option value="">-- Pumili ng Purok --</option>
-                                    <option value="Purok 1">Purok 1</option>
-                                    <option value="Purok 2">Purok 2</option>
-                                    <option value="Purok 3">Purok 3</option>
-                                    <option value="Purok 4">Purok 4</option>
-                                    <option value="Purok 5">Purok 5</option>
-                                </select>
-                            </div>
                             <div class="flex gap-3">
                                 <div class="w-1/2">
                                     <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Pangalan</label>
@@ -217,6 +206,15 @@
                                 <div class="w-1/2">
                                     <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Apelyido</label>
                                     <input type="text" id="accLastNameInput" oninput="window.autoGenCredentials()" placeholder="Dela Cruz" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider flex justify-between">
+                                    <span>Assigned Puroks</span>
+                                    <span class="text-[10px] text-indigo-500 normal-case">(Pumili ng isa o higit pa)</span>
+                                </label>
+                                <div id="accPurokContainer" class="flex flex-col gap-2 max-h-40 overflow-y-auto px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none transition-all shadow-inner hide-scrollbar">
+                                    <!-- Dynamic checkboxes injected here -->
                                 </div>
                             </div>
                             <div class="bg-slate-100 p-4 rounded-xl border border-slate-200 mt-2">
@@ -230,14 +228,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-full lg:w-2/3 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[480px] overflow-hidden">
+                <div class="w-full lg:w-2/3 bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[520px] overflow-hidden">
                     <div class="p-5 border-b border-slate-100 bg-white"><h2 class="text-lg font-bold text-slate-800">Mga Nakarehistrong Katiwala</h2></div>
                     <div class="overflow-y-auto flex-grow p-0 bg-slate-50/30">
                         <table class="w-full text-left border-collapse">
                             <thead class="sticky top-0 bg-slate-50 shadow-sm z-10 border-b border-slate-200">
                                 <tr>
-                                    <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Purok</th>
                                     <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Pangalan</th>
+                                    <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Assigned Purok(s)</th>
                                     <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Username</th>
                                     <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksyon</th>
                                 </tr>
@@ -260,28 +258,21 @@
                             </h2>
                             <p class="text-xs text-slate-500 mb-4 leading-relaxed">Kapag naidagdag, awtomatikong gagawan ng Member Account.</p>
                             <div class="flex flex-col gap-3.5">
+                                <!-- Paggamit ng combobox style kung saan pwede pumili o mag-type (HTML datalist workaround gamit select and text para madali, but select for consistency) -->
                                 <select id="addPurokInput" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
                                     <option value="">-- Pumili ng Purok --</option>
-                                    <option value="Purok 1">Purok 1</option>
-                                    <option value="Purok 2">Purok 2</option>
-                                    <option value="Purok 3">Purok 3</option>
-                                    <option value="Purok 4">Purok 4</option>
-                                    <option value="Purok 5">Purok 5</option>
+                                    <!-- Dynamic options injected here too via logic -->
+                                    <option value="Purok 1">Purok 1</option><option value="Purok 2">Purok 2</option><option value="Purok 3">Purok 3</option>
+                                    <option value="Purok 4">Purok 4</option><option value="Purok 5">Purok 5</option><option value="Purok 6">Purok 6</option>
+                                    <option value="Purok 7">Purok 7</option><option value="Purok 8">Purok 8</option><option value="Purok 9">Purok 9</option>
+                                    <option value="Purok 10">Purok 10</option>
                                 </select>
                                 <select id="addGrupoInput" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
                                     <option value="">-- Pumili ng Grupo --</option>
-                                    <option value="Grupo 1">Grupo 1</option>
-                                    <option value="Grupo 2">Grupo 2</option>
-                                    <option value="Grupo 3">Grupo 3</option>
-                                    <option value="Grupo 4">Grupo 4</option>
-                                    <option value="Grupo 5">Grupo 5</option>
-                                    <option value="Grupo 6">Grupo 6</option>
-                                    <option value="Grupo 7">Grupo 7</option>
-                                    <option value="Grupo 8">Grupo 8</option>
-                                    <option value="Grupo 9">Grupo 9</option>
-                                    <option value="Grupo 10">Grupo 10</option>
-                                    <option value="Grupo 11">Grupo 11</option>
-                                    <option value="Grupo 12">Grupo 12</option>
+                                    <option value="Grupo 1">Grupo 1</option><option value="Grupo 2">Grupo 2</option><option value="Grupo 3">Grupo 3</option>
+                                    <option value="Grupo 4">Grupo 4</option><option value="Grupo 5">Grupo 5</option><option value="Grupo 6">Grupo 6</option>
+                                    <option value="Grupo 7">Grupo 7</option><option value="Grupo 8">Grupo 8</option><option value="Grupo 9">Grupo 9</option>
+                                    <option value="Grupo 10">Grupo 10</option><option value="Grupo 11">Grupo 11</option><option value="Grupo 12">Grupo 12</option>
                                 </select>
                                 <input type="text" id="addTungkulinInput" placeholder="Mga Tungkulin (Hal. Katiwala, Kalihim)" title="Maaari kang maglagay ng higit sa isa, paghiwalayin lamang ng kuwit (,)" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                                 <input type="text" id="addNameInput" placeholder="Pangalan (Hal. Juan Dela Cruz)" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -313,18 +304,21 @@
                                 <span class="bg-indigo-100 text-indigo-700 text-xs font-extrabold px-3 py-1.5 rounded-lg ml-2 align-middle" id="personnelCount">0 Tao</span>
                             </div>
                             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-                                <button onclick="window.generateMissingCredentials()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-sm transition-all whitespace-nowrap">
-                                    Bumuo ng Missing Accounts
+                                <button id="massDeleteBtn" onclick="window.massDeletePersonnel()" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-sm transition-all whitespace-nowrap items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    Burahin (0)
+                                </button>
+                                <button onclick="window.generateMissingCredentials()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-sm transition-all whitespace-nowrap hidden sm:block" title="Bumuo ng Missing Accounts">
+                                    Gen. Accounts
                                 </button>
                                 <button onclick="window.exportMasterListPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-sm transition-all whitespace-nowrap flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                    Download PDF
+                                    PDF
                                 </button>
                                 <button onclick="window.sendMasterListToTelegram()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold shadow-sm transition-all whitespace-nowrap flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                                     Telegram
                                 </button>
-                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Filter:</label>
                                 <select id="personnelPurokFilter" onchange="window.renderPersonnelTable(); window.renderQRPreview();" class="flex-grow sm:w-auto px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none cursor-pointer transition-all">
                                     <option value="">Lahat ng Purok</option>
                                 </select>
@@ -334,10 +328,11 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-slate-50 shadow-sm z-10 border-b border-slate-200">
                                     <tr>
-                                        <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Detalye</th>
-                                        <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Pangalan</th>
-                                        <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider">Account Credentials</th>
-                                        <th class="py-3 px-5 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksyon</th>
+                                        <th class="py-3 px-4 w-10 text-center"><input type="checkbox" id="selectAllPersonnel" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" onchange="window.toggleAllPersonnel(this)"></th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Detalye</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pangalan</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Account Credentials</th>
+                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Aksyon</th>
                                     </tr>
                                 </thead>
                                 <tbody id="personnelTableBody" class="divide-y divide-slate-100"></tbody>
@@ -395,11 +390,11 @@
                     <div class="flex flex-col sm:flex-row w-full lg:w-auto gap-2 shrink-0">
                         <button onclick="window.exportAttendanceCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            Export to Excel
+                            Excel
                         </button>
                         <button onclick="window.sendReportToTelegram()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all w-full sm:w-auto flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                            I-send sa Telegram
+                            Telegram
                         </button>
                     </div>
                 </div>
@@ -478,6 +473,7 @@
                                 Unang Hakbang
                             </h3>
                             <p class="text-sm text-amber-700 mt-1 font-medium">Piliin kung anong aktibidad ang gaganapin ngayon bago magsimulang mag-scan.</p>
+                            <p class="text-xs text-amber-600 mt-1 font-bold">Assigned Areas: <span id="katAssignedAreasLabel" class="text-amber-800 bg-amber-200 px-2 py-0.5 rounded">Lahat</span></p>
                         </div>
                         <select id="katiwalaEventSelect" onchange="window.onKatiwalaEventChange()" class="px-4 py-3 border border-amber-300 rounded-xl text-sm font-bold bg-white text-amber-900 focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 min-w-[250px] shadow-sm outline-none transition-all cursor-pointer">
                             <option value="">-- Pumili ng Aktibidad --</option>
@@ -588,6 +584,44 @@
         </div>
     </div>
 
+    <!-- EDIT ACCOUNT MODAL -->
+    <div id="editAccountModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 w-full max-w-md overflow-hidden transform transition-all">
+            <div class="p-6 border-b border-slate-100">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    I-edit ang Account
+                </h3>
+            </div>
+            <div class="p-6 bg-slate-50 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
+                <input type="hidden" id="editAccountId">
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Pangalan</label>
+                        <input type="text" id="editAccFirstName" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Apelyido</label>
+                        <input type="text" id="editAccLastName" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider flex justify-between">
+                        <span>Assigned Puroks</span>
+                        <span class="text-[10px] text-indigo-500 normal-case">(Pumili ng isa o higit pa)</span>
+                    </label>
+                    <div id="editAccPurokContainer" class="flex flex-col gap-2 max-h-40 overflow-y-auto px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm outline-none transition-all shadow-inner hide-scrollbar">
+                        <!-- Dynamic checkboxes injected here -->
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-100 bg-white flex justify-end gap-3">
+                <button onclick="window.closeEditAccountModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200">Kanselahin</button>
+                <button onclick="window.updateAccount()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all">I-save ang Pagbabago</button>
+            </div>
+        </div>
+    </div>
+
     <!-- PRINT AREA -->
     <div id="printArea" class="hidden"></div>
     <!-- Toast Notification -->
@@ -596,7 +630,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Custom function para ma-parse ng tama ang CSV na may kuwit (,) sa loob ng quotes ("")
         function parseCSVRow(str, delimiter = ',') {
@@ -644,7 +678,7 @@
             currentUserRole: null, 
             currentUsername: null,
             currentMemberData: null,
-            assignedPurok: null,
+            assignedPuroks: [], // Update to support arrays
             events: [], accounts: [], personnel: [], attendance: [], config: [],
             scannerObj: null, activeEventId: null, isProcessingScan: false
         };
@@ -668,6 +702,31 @@
             }, 3000);
         };
 
+        // Utility: Kunin ang mga available na purok galing sa personnel list
+        function getPurokList() {
+            const list = new Set(["Purok 1", "Purok 2", "Purok 3", "Purok 4", "Purok 5", "Purok 6", "Purok 7", "Purok 8", "Purok 9", "Purok 10"]);
+            window.appState.personnel.forEach(p => list.add(p.purok));
+            return Array.from(list).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+        }
+
+        // I-render ang Checkboxes para sa multiple purok assignment
+        window.renderPurokCheckboxes = function() {
+            const list = getPurokList();
+            
+            // For Create Account Container
+            const container1 = document.getElementById('accPurokContainer');
+            if (container1) {
+                // Preserve currently selected checkboxes to not disrupt user typing/clicking
+                const checked1 = Array.from(container1.querySelectorAll('.acc-purok-cb:checked')).map(cb => cb.value);
+                container1.innerHTML = list.map(p => `
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" value="${p}" class="acc-purok-cb rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4" onchange="window.autoGenCredentials()" ${checked1.includes(p) ? 'checked' : ''}>
+                        <span class="text-slate-700 font-bold">${p}</span>
+                    </label>
+                `).join('');
+            }
+        };
+
         // Utility: Generate Member Credentials
         function generateMemberCredentials(name, purok) {
             const cleanPurok = purok ? purok.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() : 'purok';
@@ -688,12 +747,15 @@
 
         // Awtomatikong pagbuo ng Credentials para sa Katiwala
         window.autoGenCredentials = function() {
-            const purok = document.getElementById('accPurokInput').value.trim();
+            const cbs = document.querySelectorAll('.acc-purok-cb:checked');
+            const puroks = Array.from(cbs).map(cb => cb.value);
+            const primaryPurok = puroks[0] || '';
+
             const firstName = document.getElementById('accFirstNameInput').value.trim();
             const lastName = document.getElementById('accLastNameInput').value.trim();
 
             if (firstName && lastName) {
-                const cleanPurok = purok ? purok.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() : '';
+                const cleanPurok = primaryPurok ? primaryPurok.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() : '';
                 const cleanFirst = firstName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
                 const cleanLast = lastName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
@@ -808,6 +870,7 @@
             });
             onSnapshot(personnelCol, (snapshot) => {
                 window.appState.personnel = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                window.renderPurokCheckboxes();
                 window.renderPersonnelTable(); 
                 window.renderQRPreview();
             });
@@ -831,7 +894,7 @@
             // Check Admin
             if(user === 'admin' && pass === adminConfig.password) {
                 window.appState.currentUserRole = 'admin'; window.appState.currentUsername = 'admin';
-                window.appState.assignedPurok = 'Lahat ng Purok';
+                window.appState.assignedPuroks = ['Lahat ng Purok']; // Use arrays now
                 switchMainView('admin'); window.switchAdminTab('events');
                 window.showToast("Maligayang pagdating, Admin!");
                 return;
@@ -841,11 +904,15 @@
             const acc = window.appState.accounts.find(a => a.username === user && a.password === pass);
             if (acc) {
                 window.appState.currentUserRole = 'katiwala'; window.appState.currentUsername = user;
-                window.appState.assignedPurok = acc.purok; 
+                // Support multiple assigned puroks backward compatibly
+                window.appState.assignedPuroks = acc.puroks || (acc.purok ? [acc.purok] : []); 
+                
+                document.getElementById('katAssignedAreasLabel').textContent = window.appState.assignedPuroks.join(', ');
+
                 switchMainView('katiwala'); 
                 window.switchKatiwalaTab('scanner');
                 populateDropdowns();
-                window.showToast(`Maligayang pagdating, ${acc.firstName || 'Katiwala'} ng ${acc.purok}!`);
+                window.showToast(`Maligayang pagdating, ${acc.firstName || 'Katiwala'}!`);
                 return;
             }
 
@@ -866,7 +933,7 @@
 
         window.logout = function() {
             window.appState.currentUserRole = null; window.appState.currentUsername = null; window.appState.activeEventId = null;
-            window.appState.assignedPurok = null; window.appState.currentMemberData = null;
+            window.appState.assignedPuroks = []; window.appState.currentMemberData = null;
             safePauseScanner();
             document.getElementById('loginUsername').value = ''; document.getElementById('loginPassword').value = '';
             switchMainView('login');
@@ -970,6 +1037,57 @@
             }
         };
 
+        // Edit Account Modal Logic
+        window.openEditAccountModal = function(id) {
+            const acc = window.appState.accounts.find(a => a.id === id);
+            if (!acc) return;
+
+            document.getElementById('editAccountId').value = id;
+            document.getElementById('editAccFirstName').value = acc.firstName || '';
+            document.getElementById('editAccLastName').value = acc.lastName || '';
+
+            const assignedPuroks = acc.puroks || (acc.purok ? [acc.purok] : []);
+            const list = getPurokList();
+            const container = document.getElementById('editAccPurokContainer');
+            
+            container.innerHTML = list.map(p => `
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" value="${p}" class="edit-acc-purok-cb rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4" ${assignedPuroks.includes(p) ? 'checked' : ''}>
+                    <span class="text-slate-700 font-bold">${p}</span>
+                </label>
+            `).join('');
+
+            document.getElementById('editAccountModal').classList.remove('hidden');
+        };
+
+        window.closeEditAccountModal = function() {
+            document.getElementById('editAccountModal').classList.add('hidden');
+        };
+
+        window.updateAccount = async function() {
+            const id = document.getElementById('editAccountId').value;
+            const firstName = document.getElementById('editAccFirstName').value.trim();
+            const lastName = document.getElementById('editAccLastName').value.trim();
+            const cbs = document.querySelectorAll('.edit-acc-purok-cb:checked');
+            const puroks = Array.from(cbs).map(cb => cb.value);
+
+            if (!firstName || !lastName) return window.showToast("Kumpletuhin ang pangalan.", "error");
+            if (puroks.length === 0) return window.showToast("Pumili ng kahit isang Purok.", "error");
+
+            try {
+                await updateDoc(doc(db, basePath, 'accounts', id), {
+                    firstName,
+                    lastName,
+                    puroks: puroks,
+                    purok: puroks.join(', ') // Maintain backward compatibility
+                });
+                window.closeEditAccountModal();
+                window.showToast("Matagumpay na na-update ang account!");
+            } catch (e) {
+                window.showToast("Error sa pag-update.", "error");
+            }
+        };
+
         // Admin: Events
         window.createEvent = async function() {
             const name = document.getElementById('eventNameInput').value.trim();
@@ -1023,18 +1141,25 @@
 
         // Admin: Accounts (Katiwala)
         window.createAccount = async function() {
-            const purok = document.getElementById('accPurokInput').value.trim();
+            const cbs = document.querySelectorAll('.acc-purok-cb:checked');
+            const puroks = Array.from(cbs).map(cb => cb.value);
+
             const firstName = document.getElementById('accFirstNameInput').value.trim();
             const lastName = document.getElementById('accLastNameInput').value.trim();
             const username = document.getElementById('accUsernameInput').value.trim();
             const password = document.getElementById('accPasswordInput').value.trim();
             
-            if(!purok || !firstName || !lastName || !username || !password) return window.showToast("Kumpletuhin ang form.", "error");
+            if(puroks.length === 0 || !firstName || !lastName || !username || !password) return window.showToast("Kumpletuhin ang form at pumili ng assigned Puroks.", "error");
             if(password.length < 6) return window.showToast("Dapat at least 6 characters ang password.", "error");
             
             try {
-                await addDoc(accountsCol, { purok, firstName, lastName, username, password, createdAt: new Date().toISOString() });
-                document.getElementById('accPurokInput').value = ''; 
+                await addDoc(accountsCol, { 
+                    puroks: puroks,
+                    purok: puroks.join(', '), // compatibility format
+                    firstName, lastName, username, password, createdAt: new Date().toISOString() 
+                });
+                // Uncheck all boxes
+                cbs.forEach(cb => cb.checked = false);
                 document.getElementById('accFirstNameInput').value = ''; 
                 document.getElementById('accLastNameInput').value = ''; 
                 document.getElementById('accUsernameInput').value = ''; 
@@ -1055,11 +1180,14 @@
             tbody.innerHTML = '';
             window.appState.accounts.forEach(acc => {
                 const fullName = acc.firstName ? `${acc.firstName} ${acc.lastName}` : 'Katiwala';
+                const assignedAreas = acc.puroks && acc.puroks.length > 0 ? acc.puroks.join(', ') : (acc.purok || 'Lahat');
+
                 tbody.innerHTML += `<tr class="hover:bg-slate-100/50 border-b border-slate-100 transition-colors">
-                    <td class="py-3.5 px-5 text-sm font-bold text-slate-800">${acc.purok}</td>
                     <td class="py-3.5 px-5 text-sm font-medium text-slate-700">${fullName}</td>
+                    <td class="py-3.5 px-5 text-sm font-bold text-slate-800 break-words max-w-[200px]">${assignedAreas}</td>
                     <td class="py-3.5 px-5 text-sm font-medium text-slate-600">${acc.username}</td>
-                    <td class="py-3.5 px-5 text-center flex items-center justify-center gap-2">
+                    <td class="py-3.5 px-5 text-center flex items-center justify-center gap-2 flex-wrap">
+                        <button onclick="window.openEditAccountModal('${acc.id}')" class="text-amber-600 bg-amber-50 hover:bg-amber-100 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">Edit</button>
                         <button onclick="window.openResetModal('${acc.id}', '${acc.username}')" class="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">Reset Pass</button>
                         <button onclick="window.deleteAccount('${acc.id}')" class="text-rose-500 bg-rose-50 hover:bg-rose-100 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">Burahin</button>
                     </td>
@@ -1096,6 +1224,54 @@
             if(confirm("Burahin ang taong ito pati na ang kanyang account?")) {
                 await deleteDoc(doc(db, basePath, 'personnel', id));
                 window.showToast("Nabura na.");
+            }
+        };
+
+        // Masterlist Mass Delete Logic
+        window.toggleAllPersonnel = function(el) {
+            const cbs = document.querySelectorAll('.personnel-cb');
+            cbs.forEach(cb => cb.checked = el.checked);
+            window.updateMassDeleteBtn();
+        };
+
+        window.updateMassDeleteBtn = function() {
+            const cbs = document.querySelectorAll('.personnel-cb:checked');
+            const btn = document.getElementById('massDeleteBtn');
+            if (cbs.length > 0) {
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> Burahin (${cbs.length})`;
+            } else {
+                btn.classList.add('hidden');
+                btn.classList.remove('flex');
+            }
+        };
+
+        window.massDeletePersonnel = async function() {
+            const cbs = document.querySelectorAll('.personnel-cb:checked');
+            const ids = Array.from(cbs).map(cb => cb.value);
+            if (ids.length === 0) return;
+
+            if(confirm(`Sigurado ka bang gusto mong burahin ang ${ids.length} na tao at ang kanilang mga accounts ng sabay-sabay?`)) {
+                window.showToast("Binubura ang mga records...", "info");
+                try {
+                    // Process in chunks to respect batch limits if ever huge
+                    const batchSize = 400; 
+                    for (let i = 0; i < ids.length; i += batchSize) {
+                        const chunk = ids.slice(i, i + batchSize);
+                        const batch = writeBatch(db);
+                        chunk.forEach(id => {
+                            batch.delete(doc(db, basePath, 'personnel', id));
+                        });
+                        await batch.commit();
+                    }
+                    window.showToast(`Matagumpay na nabura ang ${ids.length} na tao.`);
+                    document.getElementById('selectAllPersonnel').checked = false;
+                    window.updateMassDeleteBtn();
+                } catch (e) {
+                    console.error(e);
+                    window.showToast("May error sa pagbura ng maramihan.", "error");
+                }
             }
         };
 
@@ -1237,7 +1413,7 @@
             if(!tbody || !filterEl) return;
 
             // Populate Filter options dynamically
-            const uniquePuroks = [...new Set(window.appState.personnel.map(p => p.purok))].sort();
+            const uniquePuroks = [...new Set(window.appState.personnel.map(p => p.purok))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
             const currentFilter = filterEl.value;
             filterEl.innerHTML = '<option value="">Lahat ng Purok</option>';
             uniquePuroks.forEach(purok => {
@@ -1252,21 +1428,30 @@
             }
 
             document.getElementById('personnelCount').textContent = `${displayList.length} Tao`;
+            
+            // Reset Mass Delete states
+            const selectAll = document.getElementById('selectAllPersonnel');
+            if(selectAll) selectAll.checked = false;
+            window.updateMassDeleteBtn();
+
             tbody.innerHTML = '';
             displayList.forEach(p => {
                 tbody.innerHTML += `<tr class="hover:bg-slate-100/50 border-b border-slate-100 transition-colors">
-                    <td class="py-3.5 px-5">
+                    <td class="py-3.5 px-4 text-center">
+                        <input type="checkbox" class="personnel-cb rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer" value="${p.id}" onchange="window.updateMassDeleteBtn()">
+                    </td>
+                    <td class="py-3.5 px-4">
                         <div class="text-sm font-bold text-slate-800">${p.purok}</div>
                         <div class="text-xs font-medium text-slate-500">${p.grupo}</div>
                     </td>
-                    <td class="py-3.5 px-5">
+                    <td class="py-3.5 px-4">
                         <div class="text-sm font-bold text-slate-800">${p.name}</div>
                         <div class="text-xs font-bold text-rose-500 mt-0.5">${p.tungkulin || 'Kasapi'}</div>
                     </td>
-                    <td class="py-3.5 px-5">
+                    <td class="py-3.5 px-4">
                         <div class="text-[11px] font-mono text-slate-600 bg-slate-50 p-1.5 rounded border border-slate-200">U: <span class="font-bold text-indigo-700">${p.username || 'N/A'}</span><br>P: <span class="font-bold text-emerald-700">${p.password || 'N/A'}</span></div>
                     </td>
-                    <td class="py-3.5 px-5 text-center"><button onclick="window.deletePersonnel('${p.id}')" class="text-rose-500 bg-rose-50 hover:bg-rose-100 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">Burahin</button></td>
+                    <td class="py-3.5 px-4 text-center"><button onclick="window.deletePersonnel('${p.id}')" class="text-rose-500 bg-rose-50 hover:bg-rose-100 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">Burahin</button></td>
                 </tr>`;
             });
         };
@@ -1321,26 +1506,23 @@
             const member = window.appState.currentMemberData;
             if(!member) return;
 
+            // Payload remains untouched so scanner functions perfectly.
             const qrText = `${member.purok}|${member.grupo}|${member.name}`;
             const container = document.getElementById('memberQRCard');
             
             container.innerHTML = `
                 <div class="qr-card bg-white border-2 border-indigo-800 rounded-xl overflow-hidden w-[250px] shadow-lg">
                     <div class="bg-indigo-600 text-white w-full text-center py-3 text-[14px] font-extrabold tracking-widest uppercase">Purok ID</div>
-                    <div class="flex-grow flex flex-col items-center justify-center p-4 w-full">
-                        <div id="member-qr-code" class="mb-3 bg-white p-2 rounded-lg shadow-sm border border-slate-100"></div>
-                        <div class="font-extrabold text-[18px] text-slate-900 leading-tight text-center break-words w-full line-clamp-2">${member.name}</div>
-                        <div class="w-4/5 border-t-2 border-slate-200 my-3"></div>
-                        <div class="text-[14px] text-slate-800 font-extrabold uppercase text-center w-full leading-none mb-2">${member.purok}</div>
-                        <div class="text-[12px] text-slate-500 font-bold uppercase text-center w-full leading-none mb-1.5">${member.grupo}</div>
-                        <div class="text-[11px] text-rose-600 font-extrabold uppercase text-center w-full leading-none">${member.tungkulin || 'Kasapi'}</div>
+                    <div class="flex-grow flex flex-col items-center justify-center p-6 w-full">
+                        <div id="member-qr-code" class="mb-4 bg-white p-2 rounded-lg shadow-sm border border-slate-100"></div>
+                        <div class="font-extrabold text-[20px] text-slate-900 leading-tight text-center break-words w-full line-clamp-2 mb-2">${member.name}</div>
                     </div>
                     <div class="bg-slate-100 w-full text-center py-2.5 text-[9px] text-slate-500 border-t border-slate-200 uppercase font-extrabold tracking-wider">Laging dalhin tuwing aktibidad</div>
                 </div>
             `;
 
             setTimeout(() => {
-                new QRCode(document.getElementById('member-qr-code'), { text: qrText, width: 140, height: 140, colorDark: "#0f172a", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.H });
+                new QRCode(document.getElementById('member-qr-code'), { text: qrText, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.H });
             }, 150);
         };
 
@@ -1376,19 +1558,17 @@
                 const words = person.name.split(' ');
                 if (ctx.measureText(person.name).width > 520 && words.length > 1) {
                     const mid = Math.ceil(words.length / 2);
-                    ctx.fillText(words.slice(0, mid).join(' '), canvas.width / 2, 540); ctx.fillText(words.slice(mid).join(' '), canvas.width / 2, 600);
-                } else { ctx.fillText(person.name, canvas.width / 2, 570); }
+                    ctx.fillText(words.slice(0, mid).join(' '), canvas.width / 2, 680); 
+                    ctx.fillText(words.slice(mid).join(' '), canvas.width / 2, 740);
+                } else { 
+                    ctx.fillText(person.name, canvas.width / 2, 700); 
+                }
                 
-                // Line separator
-                ctx.beginPath(); ctx.moveTo(100, 660); ctx.lineTo(500, 660); ctx.strokeStyle = "#cbd5e1"; ctx.lineWidth = 3; ctx.stroke();
-                
-                // Purok & Grupo & Tungkulin
-                ctx.fillStyle = "#1e293b"; ctx.font = "900 34px 'Inter', sans-serif"; ctx.fillText(person.purok.toUpperCase(), canvas.width / 2, 730);
-                ctx.fillStyle = "#64748b"; ctx.font = "bold 24px 'Inter', sans-serif"; ctx.fillText(person.grupo.toUpperCase(), canvas.width / 2, 780);
-                ctx.fillStyle = "#e11d48"; ctx.font = "800 20px 'Inter', sans-serif"; ctx.fillText((person.tungkulin || 'Kasapi').toUpperCase(), canvas.width / 2, 825);
-
                 const qrEl = document.getElementById(qrContainerId);
-                if (qrEl) { const qrcanvas = qrEl.querySelector('canvas'); if (qrcanvas) ctx.drawImage(qrcanvas, 130, 150, 340, 340); }
+                if (qrEl) { 
+                    const qrcanvas = qrEl.querySelector('canvas'); 
+                    if (qrcanvas) ctx.drawImage(qrcanvas, 100, 180, 400, 400); 
+                }
                 resolve(canvas.toDataURL("image/png"));
             });
         };
@@ -1418,35 +1598,32 @@
             
             displayList.forEach((person) => {
                 const originalIndex = window.appState.personnel.findIndex(p => p.id === person.id);
+                // Payload remains untouched so scanner functions perfectly.
                 const qrText = `${person.purok}|${person.grupo}|${person.name}`;
+                
                 grid.innerHTML += `
                     <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center">
                         <div id="qr-preview-${originalIndex}" class="mb-3 bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"></div>
                         <div class="font-extrabold text-sm text-slate-800 leading-tight break-words break-all">${person.name}</div>
-                        <div class="text-xs font-semibold text-slate-500 mt-1.5 uppercase">${person.purok} | ${person.grupo}</div>
-                        <div class="text-[10px] font-bold text-rose-500 mt-0.5 uppercase line-clamp-2">${person.tungkulin || 'Kasapi'}</div>
                         <button onclick="window.downloadSingleQR(${originalIndex})" class="mt-4 bg-slate-100 hover:bg-indigo-50 text-indigo-700 border border-slate-200 hover:border-indigo-200 py-2 rounded-xl text-xs font-bold w-full transition-all flex items-center justify-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                             Save ID
                         </button>
                     </div>`;
+                    
                 printArea.innerHTML += `
                     <div class="qr-card bg-white">
                         <div class="bg-indigo-600 text-white w-full text-center py-2.5 text-[11px] font-extrabold tracking-widest uppercase border-b border-indigo-800">Purok ID</div>
-                        <div class="flex-grow flex flex-col items-center justify-center p-2.5 w-full">
-                            <div id="qr-print-${originalIndex}" class="mb-2.5"></div>
-                            <div class="font-extrabold text-[15px] text-slate-900 leading-tight text-center break-words w-full px-2 line-clamp-2">${person.name}</div>
-                            <div class="w-4/5 border-t-2 border-slate-200 my-2"></div>
-                            <div class="text-[12px] text-slate-800 font-extrabold uppercase text-center w-full leading-none mb-1.5">${person.purok}</div>
-                            <div class="text-[10px] text-slate-500 font-bold uppercase text-center w-full leading-none mb-1">${person.grupo}</div>
-                            <div class="text-[9px] text-rose-600 font-extrabold uppercase text-center w-full leading-none line-clamp-2">${person.tungkulin || 'Kasapi'}</div>
+                        <div class="flex-grow flex flex-col items-center justify-center p-4 w-full">
+                            <div id="qr-print-${originalIndex}" class="mb-4"></div>
+                            <div class="font-extrabold text-[18px] text-slate-900 leading-tight text-center break-words w-full px-2 line-clamp-2">${person.name}</div>
                         </div>
                         <div class="bg-slate-100 w-full text-center py-2 text-[8px] text-slate-500 border-t border-slate-200 uppercase font-extrabold tracking-wider">Laging dalhin tuwing aktibidad</div>
                     </div>`;
                 
                 setTimeout(() => {
                     new QRCode(document.getElementById(`qr-preview-${originalIndex}`), { text: qrText, width: 110, height: 110, colorDark: "#0f172a", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.H });
-                    new QRCode(document.getElementById(`qr-print-${originalIndex}`), { text: qrText, width: 120, height: 120, colorDark: "#0f172a", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.H });
+                    new QRCode(document.getElementById(`qr-print-${originalIndex}`), { text: qrText, width: 140, height: 140, colorDark: "#0f172a", colorLight: "#fff", correctLevel: QRCode.CorrectLevel.H });
                 }, 100);
             });
         };
@@ -1498,7 +1675,7 @@
             // Update purok options dynamically based on event data
             if(reportPurokSelect && evId) {
                 const eventAttendance = window.appState.attendance.filter(a => a.eventId === evId);
-                const uniquePuroks = [...new Set(eventAttendance.map(a => a.purok))].sort();
+                const uniquePuroks = [...new Set(eventAttendance.map(a => a.purok))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
                 const currentPurok = reportPurokSelect.value;
                 reportPurokSelect.innerHTML = '<option value="">Lahat ng Purok</option>';
                 uniquePuroks.forEach(p => {
@@ -1739,11 +1916,11 @@
                 return;
             }
 
-            // Validation 2: Tugma ang Purok
+            // Validation 2: Tugma ang Purok (Multi-Purok Support)
             if (window.appState.currentUserRole === 'katiwala') {
-                const assignedPurok = window.appState.assignedPurok?.toLowerCase().trim();
-                if (assignedPurok && assignedPurok !== purok.toLowerCase()) {
-                    window.showToast(`Bawal: Si ${name} ay mula sa ${purok} (Ikaw ay para sa ${window.appState.assignedPurok}).`, "error");
+                const assignedPuroks = (window.appState.assignedPuroks || []).map(p => p.toLowerCase().trim());
+                if (assignedPuroks.length > 0 && !assignedPuroks.includes(purok.toLowerCase().trim())) {
+                    window.showToast(`Bawal: Si ${name} ay mula sa ${purok} (Wala sa iyong sakop).`, "error");
                     setTimeout(() => { window.appState.isProcessingScan = false; }, 3000);
                     return;
                 }
